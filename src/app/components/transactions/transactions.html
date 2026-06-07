@@ -1,0 +1,69 @@
+<div class="page-container">
+
+  <app-navbar [showMenuToggle]="true" (menuToggle)="toggleSidebar()"></app-navbar>
+
+  <div class="page-wrapper">
+    <app-sidebar [isOpen]="sidebarOpen"></app-sidebar>
+
+    <div class="content-area">
+      <main class="main-content">
+
+        <div class="page-header">
+          <div>
+            <h2>Transaction History</h2>
+            <p>View and filter all your recent transactions</p>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <button
+            class="filter-btn"
+            [class.active]="selectedFilter === 'all'"
+            (click)="onFilterChange('all')">
+            All Transactions
+          </button>
+          <button
+            class="filter-btn"
+            [class.active]="selectedFilter === 'credit'"
+            (click)="onFilterChange('credit')">
+            Income
+          </button>
+          <button
+            class="filter-btn"
+            [class.active]="selectedFilter === 'debit'"
+            (click)="onFilterChange('debit')">
+            Expenses
+          </button>
+        </div>
+
+        <div class="transactions-list">
+          <div class="transaction-item" *ngFor="let transaction of filteredTransactions">
+            <div class="transaction-icon" [ngClass]="transaction.type">
+              {{ transaction.type === 'credit' ? '↑' : '↓' }}
+            </div>
+            <div class="transaction-details">
+              <p class="transaction-description">{{ transaction.description }}</p>
+              <p class="transaction-category">{{ transaction.category }}</p>
+            </div>
+            <div class="transaction-right">
+              <div class="transaction-amount" [ngClass]="transaction.type">
+                {{ transaction.type === 'credit' ? '+' : '-' }}${{ transaction.amount | number: '1.2-2' }}
+              </div>
+              <div class="transaction-status" [ngClass]="getStatusClass(transaction.status)">
+                {{ transaction.status | uppercase }}
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="filteredTransactions.length === 0">
+            <span>📭</span>
+            <p>No transactions found</p>
+          </div>
+        </div>
+
+      </main>
+      <app-footer></app-footer>
+    </div>
+  </div>
+
+</div>

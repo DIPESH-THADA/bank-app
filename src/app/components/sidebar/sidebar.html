@@ -1,0 +1,31 @@
+<aside class="sidebar" [class.open]="isOpen">
+  <div class="sidebar-header">
+    <p class="sidebar-label">Navigation</p>
+  </div>
+  <ul class="nav-menu">
+    <li>
+      <a routerLink="/dashboard" routerLinkActive="active">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/accounts" routerLinkActive="active">
+        <span class="nav-icon">💳</span>
+        <span>Accounts</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/transactions" routerLinkActive="active">
+        <span class="nav-icon">📋</span>
+        <span>Transactions</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/transfer" routerLinkActive="active">
+        <span class="nav-icon">💸</span>
+        <span>Transfer Funds</span>
+      </a>
+    </li>
+  </ul>
+</aside>

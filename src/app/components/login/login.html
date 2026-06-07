@@ -1,0 +1,59 @@
+<div class="auth-page">
+
+  <button
+    class="theme-toggle"
+    (click)="themeService.toggleTheme()"
+    [title]="themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+    <span *ngIf="themeService.isDarkMode()">☀️</span>
+    <span *ngIf="!themeService.isDarkMode()">🌙</span>
+  </button>
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <span class="auth-logo">🏦</span>
+      <h1>Nexus Bank</h1>
+      <p>Secure Banking at Your Fingertips</p>
+    </div>
+
+    <form (ngSubmit)="login()" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Enter your email"
+          required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Enter your password"
+          required />
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        ⚠ {{ error }}
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="loading">
+        {{ loading ? 'Signing in…' : 'Sign In' }}
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a routerLink="/register">Create one here</a></p>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <p>&copy; {{ currentYear }} Nexus Bank — Protected by 256-bit SSL 🔒</p>
+  </footer>
+
+</div>

@@ -1,0 +1,75 @@
+<div class="page-container">
+
+  <app-navbar [showMenuToggle]="true" (menuToggle)="toggleSidebar()"></app-navbar>
+
+  <div class="page-wrapper">
+    <app-sidebar [isOpen]="sidebarOpen"></app-sidebar>
+
+    <div class="content-area">
+      <main class="main-content">
+
+        <div class="page-header">
+          <div>
+            <h2>Account Details</h2>
+            <p>Manage your accounts and cards</p>
+          </div>
+        </div>
+
+        <!-- Accounts Section -->
+        <div class="section">
+          <h3>Your Accounts</h3>
+          <div class="accounts-list">
+            <div class="account-item" *ngFor="let account of accounts">
+              <div class="account-info">
+                <p class="account-type">{{ account.type }} Account</p>
+                <p class="account-number">{{ account.accountNumber }}</p>
+              </div>
+              <div class="account-balance-detail">
+                <p class="balance-label">Balance</p>
+                <p class="balance-value">${{ account.balance | number: '1.2-2' }}</p>
+              </div>
+              <button class="action-btn">View Details</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards Section -->
+        <div class="section">
+          <h3>Your Cards</h3>
+          <div class="cards-grid">
+            <div class="card-item" *ngFor="let card of cards">
+              <div class="card-visual">
+                <div class="card-chip">💳</div>
+                <div class="card-number">{{ card.cardNumber }}</div>
+                <div class="card-info-row">
+                  <div>
+                    <p class="card-label">Card Holder</p>
+                    <p class="card-value">Your Name</p>
+                  </div>
+                  <div>
+                    <p class="card-label">Expires</p>
+                    <p class="card-value">{{ card.expiryDate }}</p>
+                  </div>
+                  <div>
+                    <p class="card-label">Type</p>
+                    <p class="card-value">{{ card.type }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-meta">
+                <span class="card-status" [ngClass]="'status-' + card.status">
+                  {{ card.status | uppercase }}
+                </span>
+                <span class="card-limit">Limit: ${{ card.limit | number: '1.2-2' }}</span>
+              </div>
+              <button class="action-btn">Manage Card</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+      <app-footer></app-footer>
+    </div>
+  </div>
+
+</div>
