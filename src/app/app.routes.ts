@@ -5,9 +5,11 @@ import { DashboardComponent } from './components/dashboard/dashboard';
 import { TransactionsComponent } from './components/transactions/transactions';
 import { FundTransferComponent } from './components/fund-transfer/fund-transfer';
 import { AccountDetailsComponent } from './components/account-details/account-details';
+import { WelcomeComponent } from './components/welcome/welcome';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', component: WelcomeComponent, pathMatch: 'full' },
+  { path: 'welcome', component: WelcomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { 

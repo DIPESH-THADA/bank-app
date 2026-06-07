@@ -31,3 +31,18 @@ export interface Card {
   status: 'active' | 'blocked';
   limit: number;
 }
+
+export interface Notification {
+  id: string;
+  message: string;
+  type: 'info' | 'success' | 'warning';
+  date: Date;
+  read: boolean;
+}
+
+export interface Beneficiary {
+  id: string;
+  name: string;
+  accountNumber: string;
+  bank: string;
+}

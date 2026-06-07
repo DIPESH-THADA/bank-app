@@ -1,4 +1,4 @@
-.page-container {
+﻿.page-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -49,52 +49,41 @@
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
   padding: 32px;
-  max-width: 600px;
+  max-width: 620px;
 }
 
-.success-message {
+/* Progress Steps */
+.form-steps {
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: var(--success-bg);
-  border: 1px solid var(--success-color);
-  padding: 18px 20px;
-  border-radius: 10px;
+  gap: 6px;
+  margin-bottom: 28px;
 }
 
-.success-icon {
-  font-size: 24px;
-  color: var(--success-color);
-  font-weight: 700;
-  width: 44px;
-  height: 44px;
-  background: var(--success-bg);
-  border: 2px solid var(--success-color);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.step {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 5px 10px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: linear-gradient(135deg, #c8102e 0%, #8b0d20 100%);
+    color: white;
+  }
 }
 
-.success-title {
-  margin: 0 0 4px;
-  font-weight: 700;
-  color: var(--success-color);
-  font-size: 15px;
+.step-arrow {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.success-sub {
-  margin: 0;
-  color: var(--success-color);
-  font-size: 13px;
-  opacity: 0.85;
-}
-
+/* Form */
 .transfer-form {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .form-row {
@@ -133,8 +122,8 @@
 
     &:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.14);
+      border-color: #c8102e;
+      box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.14);
     }
 
     &::placeholder {
@@ -149,7 +138,43 @@
     background-position: right 12px center;
     background-size: 16px;
     padding-right: 40px;
+    cursor: pointer;
   }
+}
+
+.required {
+  color: var(--danger-color);
+}
+
+.optional {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.amount-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.amount-input-wrapper input {
+  padding-left: 30px !important;
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 5px 0 0;
 }
 
 .error-message {
@@ -160,12 +185,16 @@
   background: var(--danger-bg);
   border-radius: 8px;
   border-left: 3px solid var(--danger-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
+/* Transfer Button */
 .transfer-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #c8102e 0%, #8b0d20 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -173,104 +202,205 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
-  margin-top: 6px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 24px rgba(200, 16, 46, 0.4);
   }
 
   &:disabled {
     opacity: 0.65;
     cursor: not-allowed;
   }
-}
 
-/* ── 1400px — Large desktop ── */
-@media (max-width: 1400px) {
-  .main-content {
-    padding: 28px;
+  &:focus-visible {
+    outline: 2px solid #c8102e;
+    outline-offset: 2px;
   }
 }
 
-/* ── 1024px — Tablet landscape ── */
-@media (max-width: 1024px) {
-  .main-content {
-    padding: 22px;
+/* Cancel Button */
+.cancel-btn {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--text-secondary);
+    background: var(--bg-hover);
   }
 
-  .transfer-card {
-    padding: 26px;
-    max-width: 100%;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Confirm Panel */
+.confirm-panel {
+  animation: fadeIn 0.25s ease;
+}
+
+.confirm-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.confirm-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 22px;
+}
+
+.confirm-details {
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border-light);
+  gap: 12px;
+
+  &:last-child { border-bottom: none; }
+
+  &.highlight {
+    background: var(--nav-active-bg);
   }
 }
 
-/* ── 900px — Tablet ── */
-@media (max-width: 900px) {
-  .transfer-card {
-    max-width: 100%;
+.confirm-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.confirm-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: right;
+
+  &.amount {
+    font-size: 20px;
+    font-weight: 800;
+    color: #c8102e;
+    letter-spacing: -0.5px;
   }
 }
 
-/* ── 480px — Small phones ── */
-@media (max-width: 480px) {
-  .page-header {
-    margin-bottom: 20px;
-
-    h2 {
-      font-size: 20px;
-    }
-  }
-
-  .transfer-card {
-    padding: 20px 16px;
-    border-radius: 12px;
-  }
+.confirm-actions {
+  display: flex;
+  gap: 12px;
 
   .transfer-btn {
-    font-size: 14px;
-    padding: 12px;
-  }
-
-  .success-message {
-    padding: 14px 16px;
-    gap: 12px;
-  }
-
-  .success-icon {
-    width: 38px;
-    height: 38px;
-    font-size: 20px;
+    flex: 2;
+    margin-top: 0;
   }
 }
 
-/* ── 375px — Extra small phones ── */
+/* Success Panel */
+.success-panel {
+  text-align: center;
+  padding: 12px 0;
+  animation: fadeIn 0.3s ease;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--success-bg);
+  border: 3px solid var(--success-color);
+  color: var(--success-color);
+  font-size: 28px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.success-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--success-color);
+  margin: 0 0 8px;
+}
+
+.success-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 28px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 1400px) { .main-content { padding: 28px; } }
+
+@media (max-width: 1024px) {
+  .main-content { padding: 22px; }
+  .transfer-card { padding: 26px; max-width: 100%; }
+}
+
+@media (max-width: 900px) { .transfer-card { max-width: 100%; } }
+
+@media (max-width: 480px) {
+  .page-header h2 { font-size: 20px; }
+  .transfer-card { padding: 20px 16px; border-radius: 12px; }
+  .transfer-btn { font-size: 14px; padding: 12px; }
+  .form-steps { flex-wrap: wrap; gap: 4px; }
+  .step { font-size: 11px; padding: 4px 8px; }
+  .confirm-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .confirm-value { text-align: left; }
+}
+
 @media (max-width: 375px) {
-  .page-header h2 {
-    font-size: 18px;
-  }
-
-  .transfer-card {
-    padding: 16px 14px;
-    border-radius: 10px;
-  }
-
+  .page-header h2 { font-size: 18px; }
+  .transfer-card { padding: 16px 14px; border-radius: 10px; }
   .form-group {
     margin-bottom: 14px;
-
-    label {
-      font-size: 12px;
-    }
-
-    input,
-    select {
-      padding: 10px 12px;
-      font-size: 13px;
-    }
+    label { font-size: 12px; }
+    input, select { padding: 10px 12px; font-size: 13px; }
   }
-
-  .transfer-btn {
-    font-size: 13px;
-    padding: 11px;
-  }
+  .transfer-btn { font-size: 13px; padding: 11px; }
 }

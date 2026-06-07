@@ -1,26 +1,26 @@
-/* =============================================
+﻿/* =============================================
    NEXUS BANK — Global Styles & CSS Custom Properties
    ============================================= */
 
 /* ---------- CSS Variables: Light Mode ---------- */
 :root {
-  --bg-page: #f5f7fa;
+  --bg-page: #f4f1ee;
   --bg-card: #ffffff;
   --bg-sidebar: #ffffff;
-  --bg-hover: #f9f9f9;
+  --bg-hover: #fdf5f5;
   --bg-input: #ffffff;
   --bg-filter-btn: #ffffff;
 
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-muted: #999999;
+  --text-primary: #1a0508;
+  --text-secondary: #5a3a3a;
+  --text-muted: #9a7a7a;
 
-  --border-color: #e0e0e0;
-  --border-light: #f0f0f0;
+  --border-color: #e8d5d5;
+  --border-light: #f5eaea;
 
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 10px rgba(200, 16, 46, 0.05);
+  --shadow-md: 0 5px 20px rgba(200, 16, 46, 0.1);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.18);
 
   --success-bg: #d4edda;
   --success-color: #155724;
@@ -29,57 +29,69 @@
   --warning-bg: #fff3cd;
   --warning-color: #856404;
 
-  --nav-link: #666666;
-  --nav-link-hover-bg: #f5f7fa;
-  --nav-active-bg: #f0f2ff;
-  --nav-active-color: #667eea;
-  --nav-active-border: #667eea;
+  --nav-link: #5a3a3a;
+  --nav-link-hover-bg: #fdf5f5;
+  --nav-active-bg: rgba(200, 16, 46, 0.08);
+  --nav-active-color: #c8102e;
+  --nav-active-border: #c8102e;
 
-  --scrollbar-track: #f5f7fa;
-  --scrollbar-thumb: #e0e0e0;
+  --gold-color: #b8960c;
+  --gold-light: #e8c84a;
+
+  --scrollbar-track: #f4f1ee;
+  --scrollbar-thumb: #e8d5d5;
+
+  --info-bg: rgba(200, 16, 46, 0.06);
+  --info-color: #c8102e;
 }
 
-/* ---------- CSS Variables: Dark Mode ---------- */
+/* ---------- CSS Variables: Dark Mode (RBB Navy Theme) ---------- */
 [data-theme='dark'] {
-  --bg-page: #0d1117;
-  --bg-card: #1c2128;
-  --bg-sidebar: #161b22;
-  --bg-hover: #21262d;
-  --bg-input: #21262d;
-  --bg-filter-btn: #1c2128;
+  --bg-page: #080d1a;
+  --bg-card: #0f1628;
+  --bg-sidebar: #0a1020;
+  --bg-hover: #141f35;
+  --bg-input: #0f1628;
+  --bg-filter-btn: #0f1628;
 
-  --text-primary: #e6edf3;
-  --text-secondary: #8b949e;
-  --text-muted: #6e7681;
+  --text-primary: #f0f4ff;
+  --text-secondary: #a0b0cc;
+  --text-muted: #6a80a0;
 
-  --border-color: #30363d;
-  --border-light: #21262d;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.05);
 
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.7);
 
-  --success-bg: #0d2818;
+  --success-bg: rgba(74, 222, 128, 0.08);
   --success-color: #4ade80;
-  --danger-bg: #2d1215;
+  --danger-bg: rgba(248, 113, 113, 0.08);
   --danger-color: #f87171;
-  --warning-bg: #271f0a;
+  --warning-bg: rgba(251, 191, 36, 0.08);
   --warning-color: #fbbf24;
 
-  --nav-link: #8b949e;
-  --nav-link-hover-bg: #21262d;
-  --nav-active-bg: #1a2744;
-  --nav-active-color: #7c8ff0;
-  --nav-active-border: #7c8ff0;
+  --nav-link: #a0b0cc;
+  --nav-link-hover-bg: #141f35;
+  --nav-active-bg: rgba(200, 16, 46, 0.14);
+  --nav-active-color: #ff8098;
+  --nav-active-border: #c8102e;
 
-  --scrollbar-track: #0d1117;
-  --scrollbar-thumb: #30363d;
+  --gold-color: #b8960c;
+  --gold-light: #e8c84a;
+
+  --scrollbar-track: #080d1a;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
+
+  --info-bg: rgba(200, 16, 46, 0.1);
+  --info-color: #ff8098;
 }
 
 /* ---------- SCSS Variables (compile-time) ---------- */
-$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-$primary-color: #667eea;
-$secondary-color: #764ba2;
+$primary-gradient: linear-gradient(135deg, #c8102e 0%, #8b0d20 100%);
+$primary-color: #c8102e;
+$secondary-color: #b8960c;
 
 /* ---------- Reset & Base ---------- */
 * {
@@ -218,10 +230,56 @@ textarea {
   50%       { opacity: 0.7; }
 }
 
-.fade-in      { animation: fadeIn 0.3s ease-in; }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.fade-in       { animation: fadeIn 0.3s ease-in; }
 .slide-in-down { animation: slideInDown 0.3s ease-out; }
-.slide-in-up  { animation: slideInUp 0.3s ease-out; }
-.pulse        { animation: pulse 2s infinite; }
+.slide-in-up   { animation: slideInUp 0.3s ease-out; }
+.pulse         { animation: pulse 2s infinite; }
+
+/* ---------- Accessibility ---------- */
+/* High-contrast visible focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #c8102e;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip-to-content link for screen readers */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 8px;
+  background: #c8102e;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 9999;
+  text-decoration: none;
+  transition: top 0.2s ease;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1200px) {

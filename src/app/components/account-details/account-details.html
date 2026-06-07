@@ -6,7 +6,19 @@
     <app-sidebar [isOpen]="sidebarOpen"></app-sidebar>
 
     <div class="content-area">
-      <main class="main-content">
+      <main class="main-content" role="main">
+
+        <!-- Toast Notification -->
+        <div
+          class="toast"
+          [class.toast-success]="toastType === 'success'"
+          [class.toast-warning]="toastType === 'warning'"
+          [class.show]="toastMessage"
+          role="alert"
+          aria-live="polite">
+          <span class="toast-icon" aria-hidden="true">{{ toastType === 'success' ? '✓' : '⚠' }}</span>
+          {{ toastMessage }}
+        </div>
 
         <div class="page-header">
           <div>
@@ -18,17 +30,37 @@
         <!-- Accounts Section -->
         <div class="section">
           <h3>Your Accounts</h3>
-          <div class="accounts-list">
-            <div class="account-item" *ngFor="let account of accounts">
+
+          <!-- Accounts Loading Skeleton -->
+          <div class="accounts-list" *ngIf="loadingAccounts" aria-busy="true">
+            <div class="account-item skeleton-account" *ngFor="let i of [1,2,3]">
+              <div class="sk sk-circle"></div>
+              <div class="sk-body">
+                <div class="sk sk-line w-40"></div>
+                <div class="sk sk-line w-25"></div>
+              </div>
+              <div class="sk-right">
+                <div class="sk sk-line w-50"></div>
+                <div class="sk sk-line w-30"></div>
+              </div>
+              <div class="sk sk-btn"></div>
+            </div>
+          </div>
+
+          <div class="accounts-list" *ngIf="!loadingAccounts" role="list">
+            <div class="account-item" *ngFor="let account of accounts" role="listitem">
+              <div class="account-type-icon" aria-hidden="true">{{ getAccountTypeIcon(account.type) }}</div>
               <div class="account-info">
                 <p class="account-type">{{ account.type }} Account</p>
                 <p class="account-number">{{ account.accountNumber }}</p>
               </div>
               <div class="account-balance-detail">
-                <p class="balance-label">Balance</p>
-                <p class="balance-value">${{ account.balance | number: '1.2-2' }}</p>
+                <p class="balance-label">Available Balance</p>
+                <p class="balance-value">{{ account.balance | currency }}</p>
               </div>
-              <button class="action-btn">View Details</button>
+              <button class="action-btn" [attr.aria-label]="'View details for ' + account.type + ' account'">
+                View Statement
+              </button>
             </div>
           </div>
         </div>
@@ -36,40 +68,67 @@
         <!-- Cards Section -->
         <div class="section">
           <h3>Your Cards</h3>
-          <div class="cards-grid">
-            <div class="card-item" *ngFor="let card of cards">
-              <div class="card-visual">
-                <div class="card-chip">💳</div>
-                <div class="card-number">{{ card.cardNumber }}</div>
+
+          <!-- Cards Loading Skeleton -->
+          <div class="cards-grid" *ngIf="loadingCards" aria-busy="true">
+            <div class="card-item sk-card" *ngFor="let i of [1,2,3]">
+              <div class="sk sk-card-visual"></div>
+              <div class="sk-card-meta">
+                <div class="sk sk-line w-40"></div>
+                <div class="sk sk-line w-60"></div>
+              </div>
+              <div class="sk sk-btn"></div>
+            </div>
+          </div>
+
+          <div class="cards-grid" *ngIf="!loadingCards" role="list">
+            <div class="card-item" *ngFor="let card of cards" [class.blocked]="card.status === 'blocked'" role="listitem">
+              <div class="card-visual" [class.card-blocked]="card.status === 'blocked'">
+                <div class="card-chip" aria-hidden="true">💳</div>
+                <div class="card-network" aria-hidden="true">{{ card.type }}</div>
+                <div class="card-number" aria-label="Card number">{{ card.cardNumber }}</div>
                 <div class="card-info-row">
-                  <div>
-                    <p class="card-label">Card Holder</p>
-                    <p class="card-value">Your Name</p>
-                  </div>
                   <div>
                     <p class="card-label">Expires</p>
                     <p class="card-value">{{ card.expiryDate }}</p>
                   </div>
                   <div>
-                    <p class="card-label">Type</p>
-                    <p class="card-value">{{ card.type }}</p>
+                    <p class="card-label">Limit</p>
+                    <p class="card-value">{{ card.limit | currency: 'USD' : 'symbol' : '1.0-0' }}</p>
                   </div>
+                </div>
+                <div class="card-blocked-overlay" *ngIf="card.status === 'blocked'" aria-hidden="true">
+                  <span>🔒 BLOCKED</span>
                 </div>
               </div>
               <div class="card-meta">
-                <span class="card-status" [ngClass]="'status-' + card.status">
+                <span
+                  class="card-status"
+                  [ngClass]="'status-' + card.status"
+                  [attr.aria-label]="'Card status: ' + card.status">
                   {{ card.status | uppercase }}
                 </span>
-                <span class="card-limit">Limit: ${{ card.limit | number: '1.2-2' }}</span>
               </div>
-              <button class="action-btn">Manage Card</button>
+              <button
+                class="toggle-card-btn"
+                [class.btn-block]="card.status === 'active'"
+                [class.btn-activate]="card.status === 'blocked'"
+                [disabled]="togglingCardId === card.id"
+                (click)="toggleCard(card)"
+                [attr.aria-label]="(card.status === 'active' ? 'Block' : 'Activate') + ' card ending in ' + card.cardNumber.slice(-4)">
+                <span class="spinner" *ngIf="togglingCardId === card.id" aria-hidden="true"></span>
+                <span *ngIf="togglingCardId !== card.id">
+                  {{ card.status === 'active' ? '🔒 Block Card' : '✓ Activate Card' }}
+                </span>
+                <span *ngIf="togglingCardId === card.id">Processing…</span>
+              </button>
             </div>
           </div>
         </div>
 
       </main>
-      <app-footer></app-footer>
     </div>
   </div>
 
+  <app-footer></app-footer>
 </div>

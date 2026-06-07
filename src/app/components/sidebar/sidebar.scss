@@ -1,4 +1,4 @@
-.sidebar {
+﻿.sidebar {
   width: 240px;
   min-width: 240px;
   background: var(--bg-sidebar);
@@ -79,6 +79,46 @@
       border-left: 3px solid var(--nav-active-border);
     }
   }
+}
+
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  padding: 16px 20px 6px;
+  margin-top: 4px;
+  border-top: 1px solid var(--border-light);
+}
+
+.nav-menu-soon {
+  a {
+    opacity: 0.55;
+    cursor: not-allowed;
+
+    &:hover {
+      background: transparent;
+      color: var(--nav-link);
+    }
+  }
+}
+
+.nav-link-disabled {
+  pointer-events: none;
+}
+
+.soon-tag {
+  margin-left: auto;
+  background: var(--warning-bg);
+  color: var(--warning-color);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  flex-shrink: 0;
 }
 
 /* ── 480px — Large phones: wider slide-in panel ── */

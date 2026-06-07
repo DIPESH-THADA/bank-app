@@ -1,30 +1,48 @@
-<aside class="sidebar" [class.open]="isOpen">
+<aside class="sidebar" [class.open]="isOpen" role="complementary" aria-label="Sidebar navigation">
   <div class="sidebar-header">
     <p class="sidebar-label">Navigation</p>
   </div>
-  <ul class="nav-menu">
-    <li>
-      <a routerLink="/dashboard" routerLinkActive="active">
-        <span class="nav-icon">📊</span>
+  <ul class="nav-menu" role="menu">
+    <li role="none">
+      <a routerLink="/dashboard" routerLinkActive="active" role="menuitem" aria-label="Dashboard">
+        <span class="nav-icon" aria-hidden="true">📊</span>
         <span>Dashboard</span>
       </a>
     </li>
-    <li>
-      <a routerLink="/accounts" routerLinkActive="active">
-        <span class="nav-icon">💳</span>
+    <li role="none">
+      <a routerLink="/accounts" routerLinkActive="active" role="menuitem" aria-label="Accounts">
+        <span class="nav-icon" aria-hidden="true">💳</span>
         <span>Accounts</span>
       </a>
     </li>
-    <li>
-      <a routerLink="/transactions" routerLinkActive="active">
-        <span class="nav-icon">📋</span>
+    <li role="none">
+      <a routerLink="/transactions" routerLinkActive="active" role="menuitem" aria-label="Transactions">
+        <span class="nav-icon" aria-hidden="true">📋</span>
         <span>Transactions</span>
       </a>
     </li>
-    <li>
-      <a routerLink="/transfer" routerLinkActive="active">
-        <span class="nav-icon">💸</span>
+    <li role="none">
+      <a routerLink="/transfer" routerLinkActive="active" role="menuitem" aria-label="Transfer Funds">
+        <span class="nav-icon" aria-hidden="true">💸</span>
         <span>Transfer Funds</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-section-label">Coming Soon</div>
+  <ul class="nav-menu nav-menu-soon" role="menu">
+    <li role="none">
+      <a class="nav-link-disabled" aria-label="Bill Payments — coming soon" role="menuitem" aria-disabled="true" tabindex="-1">
+        <span class="nav-icon" aria-hidden="true">📄</span>
+        <span>Bill Payments</span>
+        <span class="soon-tag" aria-hidden="true">Soon</span>
+      </a>
+    </li>
+    <li role="none">
+      <a class="nav-link-disabled" aria-label="Investments — coming soon" role="menuitem" aria-disabled="true" tabindex="-1">
+        <span class="nav-icon" aria-hidden="true">📈</span>
+        <span>Investments</span>
+        <span class="soon-tag" aria-hidden="true">Soon</span>
       </a>
     </li>
   </ul>
