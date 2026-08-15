@@ -1,59 +1,55 @@
 # NexusBank
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.14.
+> An Angular banking-interface project with a modern component-based architecture and responsive application shell.
 
-## Development server
+## Overview
 
-To start a local development server, run:
+This repository is part of **Dipesh Thada’s development portfolio**. It is documented to make the project’s purpose, technology choices, and local setup clear for recruiters, collaborators, and learners.
 
-```bash
-ng serve
-```
+## Technology
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+| Area | Implementation |
+| --- | --- |
+| Primary stack | Angular, TypeScript, CSS |
+| Repository type | Web application / interface project |
 
-## Code scaffolding
+## Getting started
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Install the project dependencies and start the local development server.
 
 ```bash
-ng generate --help
+git clone https://github.com/DIPESH-THADA/bank-app.git
+cd bank-app
+npm install
+npm start
 ```
 
-## Building
+## Available scripts
 
-To build the project run:
+| Script | Command |
+| --- | --- |
+| `ng` | `ng` |
+| `start` | `ng serve` |
+| `build` | `ng build` |
+| `watch` | `ng build --watch --configuration development` |
+| `test` | `ng test` |
 
-```bash
-ng build
-```
+## Repository layout
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+| Path | Purpose |
+| --- | --- |
+| `src/` | Application source code and UI components. |
+| `public/` | Static files served by the application. |
+| `package.json` | Development scripts and dependency manifest. |
 
-## Running unit tests
+## Development notes
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+This documentation reflects the source currently committed to the repository. Before deploying or extending the project, review environment variables, dependency versions, and any external-service configuration referenced by the codebase.
 
-```bash
-ng test
-```
+## Contributing
 
-## Running end-to-end tests
+This is a portfolio and learning project. Suggestions and improvements are welcome through a clearly described issue or pull request. Please keep changes focused, test affected functionality locally, and avoid committing secrets or generated dependency folders.
 
-For end-to-end (e2e) testing, run:
+## License
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+No license file is currently included in this repository. Add an explicit license before treating the code as reusable by third parties.
