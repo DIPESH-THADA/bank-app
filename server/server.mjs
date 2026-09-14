@@ -9,11 +9,12 @@ const passwordHash = (password, salt) => scryptSync(password, salt, 64).toString
 const fail = (status, message) => {
   throw Object.assign(new Error(message), { status });
 };
-export function createBankServer(filename = ':memory:') {
+export function createBankServer(filename = ':memory:', options = {}) {
   const db = new DatabaseSync(filename);
   db.exec(`PRAGMA foreign_keys=ON;
     CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,email TEXT UNIQUE,name TEXT,salt TEXT,password TEXT,verified INTEGER,verification TEXT);
     CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY,userId TEXT,expires INTEGER);
+    CREATE TABLE IF NOT EXISTS auth_attempts(ip TEXT PRIMARY KEY,count INTEGER,expires INTEGER);
     CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY,userId TEXT,type TEXT,number TEXT,cents INTEGER);
     CREATE TABLE IF NOT EXISTS cards(id TEXT PRIMARY KEY,userId TEXT,status TEXT,limitCents INTEGER);
     CREATE TABLE IF NOT EXISTS ledger(id TEXT PRIMARY KEY,userId TEXT,accountId TEXT,reference TEXT,date TEXT,description TEXT,cents INTEGER,type TEXT,category TEXT);
@@ -77,7 +78,6 @@ export function createBankServer(filename = ':memory:') {
   }
   if (!db.prepare('SELECT id FROM users WHERE email=?').get('demo@nexusbank.test'))
     addUser('Demo Customer', 'demo@nexusbank.test', 'NexusDemo!2026', 1);
-  const attempts = new Map();
   const publicUser = (u) => {
     const profile = db
       .prepare('SELECT phone,address,avatar FROM profiles WHERE userId=?')
@@ -121,7 +121,7 @@ export function createBankServer(filename = ':memory:') {
       if (
         mutation &&
         req.headers.origin &&
-        req.headers.origin !== (process.env.APP_ORIGIN || 'http://localhost:4200')
+        req.headers.origin !== (options.origin || process.env.APP_ORIGIN || 'http://localhost:4200')
       )
         fail(403, 'Origin is not allowed.');
       let body = {};
@@ -139,12 +139,15 @@ export function createBankServer(filename = ':memory:') {
         }
       }
       if (path.startsWith('/api/auth/') && mutation) {
-        const ip = req.socket.remoteAddress,
+        const ip = hash(options.clientIp || req.socket.remoteAddress),
           now = Date.now();
-        for (const [key, value] of attempts) if (now > value.until) attempts.delete(key);
-        const attempt = attempts.get(ip) || { count: 0, until: now + 60000 };
-        if (++attempt.count > 20) fail(429, 'Too many attempts. Try again in one minute.');
-        attempts.set(ip, attempt);
+        db.prepare('DELETE FROM auth_attempts WHERE expires<?').run(now);
+        db.prepare('DELETE FROM sessions WHERE expires<?').run(now);
+        db.prepare(
+          'INSERT INTO auth_attempts VALUES(?,1,?) ON CONFLICT(ip) DO UPDATE SET count=count+1',
+        ).run(ip, now + 60000);
+        if (db.prepare('SELECT count FROM auth_attempts WHERE ip=?').get(ip).count > 20)
+          fail(429, 'Too many attempts. Try again in one minute.');
       }
       if (path === '/api/auth/register' && req.method === 'POST') {
         const { name, email, password } = body;
@@ -213,7 +216,7 @@ export function createBankServer(filename = ':memory:') {
         );
         res.setHeader(
           'Set-Cookie',
-          `nexus_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
+          `nexus_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600${options.secureCookies || process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
         );
         return send(200, publicUser(user));
       }

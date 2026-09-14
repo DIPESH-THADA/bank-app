@@ -5,8 +5,11 @@
 [build.environment]
   NODE_VERSION = "24"
 
-# Add the hosted API proxy above this SPA fallback before publishing
-# the full banking app. See DEPLOYMENT.md.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# The bank function handles /api/* using its custom path configuration.
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -1,33 +1,28 @@
 # Netlify deployment
 
-The GitHub repository root is the Angular project root. `netlify.toml` configures Node 24, `npm run build`, and `dist/nexus-bank/browser`, plus client-side route handling for page refreshes.
+The site is hosted at https://rastriya-banijya-bank-rbb.netlify.app. The project root is the GitHub repository root. `netlify.toml` configures Node 24, the Angular production build, `dist/nexus-bank/browser`, and SPA route fallbacks.
 
-## Backend required
+## Persistent demo API
 
-This app uses `/api` for login, registration, accounts, transfers, profile photos and notifications. `proxy.conf.json` only works with the local Angular development server; Netlify does not use it. Uploading the frontend alone does not deploy the API.
+`netlify/functions/bank.mjs` handles `/api/*` and delegates validation and banking logic to the same API used locally. No separate backend host or database credentials are required.
 
-The current API is a persistent Node process backed by a local SQLite file. It needs a Node host with a persistent disk, or a migration to a hosted database and serverless API. Do not use a temporary function filesystem for the banking database.
+Each request loads a private SQLite snapshot from the site-wide Netlify Blobs store `rbb-banking-demo-v1` into its own temporary working directory. Mutations are saved using an ETag conditional write. A conflicting write retries from the latest snapshot, so concurrent transfers cannot silently overwrite each other. A failed save never returns a successful transfer or login response. Session and rate-limit data also persist across invocations. Temporary files are removed after requests; the durable copy is in Blobs, not the function filesystem.
 
-Once the API has a public HTTPS origin, place this proxy rule **before** the SPA fallback in `netlify.toml`, replacing the example host with the actual backend:
+This whole-database snapshot approach is for a small, low-traffic simulated portfolio demo. It is not suitable for production banking or a large user base. For greater scale, migrate to a transactional hosted database. The deployed database starts with fresh demo seed data; local customer records and photos are not uploaded.
 
-```toml
-[[redirects]]
-  from = "/api/*"
-  to = "https://YOUR-BACKEND-HOST/api/:splat"
-  status = 200
-  force = true
-```
+Functions use Secure, HttpOnly, SameSite cookies, and check mutations against the request's site origin. A Netlify runtime supporting `node:sqlite` is required (Node 24 configured for this site). Email verification remains explicitly simulated.
 
-Configure the backend with `APP_ORIGIN` matching the exact Netlify site origin, `NODE_ENV=production` for Secure cookies, and `DB_PATH` on its persistent disk. Its HTTP listener must bind to the address required by that hosting provider; the current local default is loopback. These backend settings are not Netlify frontend build variables.
-
-## Publish after connecting the account and backend
+## Publish
 
 ```sh
 npx netlify-cli login
-npx netlify-cli link
-npx netlify-cli deploy --build --prod
+npx netlify-cli link --id f20ea76c-ad6f-44dc-9097-43b57cab46a0
+npx netlify-cli env:set AWS_LAMBDA_JS_RUNTIME nodejs24.x
+npm run test:api
+npm run build
+npx netlify-cli deploy --no-build --prod --dir dist/nexus-bank/browser --functions netlify/functions
 ```
 
-For a new project, create/import `DIPESH-THADA/bank-app` in Netlify first or use the CLI's new-project flow. For Git deployment, select branch `master` and leave the base directory empty.
+The project can also be imported from `DIPESH-THADA/bank-app`, branch `master`, with an empty base directory. GitHub automatic deployment is separate from CLI publication and must be connected in Netlify.
 
-Verify on the live URL: registration, sign-in, a page refresh on `/profile`, profile-photo persistence, a simulated transfer, and sign-out. A successful static build alone does not verify the banking API.
+Verify the live URL after deploying: login, `/profile` page refresh, profile-photo persistence, a simulated transfer, and sign-out. Do not publish `server/data` or include it in function bundles.

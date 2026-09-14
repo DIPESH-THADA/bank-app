@@ -34,7 +34,7 @@ Alternatively register an account with a 12-128 character password containing up
 
 The Angular development server proxies `/api` to `http://127.0.0.1:3001`. The API persists data in `server/data/nexus.sqlite` (ignored by Git). Restarting the API preserves balances and users. Run both processes: a static frontend deployment alone cannot provide authentication or banking data.
 
-If port 4200 is occupied, stop your previous app server or configure another port and set `APP_ORIGIN` to the exact frontend origin before starting the API. `PORT` and `DB_PATH` also configure the API. The API binds to loopback. There is no production deployment configuration in this project.
+If port 4200 is occupied, stop your previous app server or configure another port and set `APP_ORIGIN` to the exact frontend origin before starting the API. `PORT` and `DB_PATH` also configure the API. The API binds to loopback. For the hosted Netlify demo, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Checks
 
@@ -88,12 +88,12 @@ See [AUDIT-IMPLEMENTATION.md](AUDIT-IMPLEMENTATION.md) for completed audit chang
 
 ## Repository layout
 
-| Path | Purpose |
-| --- | --- |
-| `src/` | Angular application, components, services and tests. |
-| `public/` | Static images and branding assets. |
-| `server/` | Local API, SQLite persistence and API tests. |
-| `package.json` | Dependencies and development scripts. |
+| Path           | Purpose                                              |
+| -------------- | ---------------------------------------------------- |
+| `src/`         | Angular application, components, services and tests. |
+| `public/`      | Static images and branding assets.                   |
+| `server/`      | Local API, SQLite persistence and API tests.         |
+| `package.json` | Dependencies and development scripts.                |
 
 ## Contributing
 
@@ -102,3 +102,7 @@ Suggestions and improvements are welcome through issues or pull requests. Keep c
 ## License
 
 No license file is currently included in this repository.
+
+## Hosted demo
+
+Netlify serves both the frontend and `/api` functions, with persistent demo storage in Netlify Blobs. See [DEPLOYMENT.md](DEPLOYMENT.md) for deployment and concurrency details.

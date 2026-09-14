@@ -21,7 +21,7 @@ Source: `nexusbank-audit.pdf`, supplied by the project owner. The PDF is an audi
 
 The audit recommends Express/NestJS, PostgreSQL and Prisma. This implementation uses Node's HTTP server and SQLite to run with the installed toolchain without another service or dependency installation. It is a local, single-process demo. SQLite is experimental in the Node 23 runtime used for verification. Use a supported Node 24 LTS installation for ongoing development and retest there.
 
-Email verification is explicitly simulated: its token is returned to the registering browser. This demonstrates the state transition, **not proof of email ownership**. The seeded demo credentials are public. The API binds to loopback and is not a production authentication service. It does not move real money. No deployment was performed.
+Email verification is explicitly simulated: its token is returned to the registering browser. This demonstrates the state transition, **not proof of email ownership**. The seeded demo credentials are public. The API binds to loopback and is not a production authentication service. It does not move real money. The Netlify deployment now uses a serverless adapter with private, conditional-write snapshot storage; see DEPLOYMENT.md.
 
 ## Remaining roadmap work
 
