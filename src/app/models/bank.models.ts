@@ -3,6 +3,17 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface ProfileUpdate {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  avatar: string;
+  currentPassword: string;
 }
 
 export interface Account {
@@ -14,6 +25,7 @@ export interface Account {
 }
 
 export interface Transaction {
+  reference?: string;
   id: string;
   date: Date;
   description: string;

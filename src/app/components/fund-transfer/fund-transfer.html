@@ -1,5 +1,4 @@
 <div class="page-container">
-
   <app-navbar [showMenuToggle]="true" (menuToggle)="toggleSidebar()"></app-navbar>
 
   <div class="page-wrapper">
@@ -7,7 +6,6 @@
 
     <div class="content-area">
       <main class="main-content" role="main">
-
         <div class="page-header">
           <div>
             <h2>Transfer Funds</h2>
@@ -16,15 +14,15 @@
         </div>
 
         <div class="transfer-card">
-
           <!-- Step 1 · Form -->
           <form
+            [formGroup]="form"
             *ngIf="!confirming && !success"
             (ngSubmit)="review()"
             class="transfer-form"
             novalidate
-            aria-label="Fund transfer form">
-
+            aria-label="Fund transfer form"
+          >
             <div class="form-steps">
               <span class="step active" aria-current="step">1 · Enter Details</span>
               <span class="step-arrow" aria-hidden="true">›</span>
@@ -35,18 +33,35 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="fromAccount">From Account <span class="required" aria-hidden="true">*</span></label>
-                <select id="fromAccount" [(ngModel)]="fromAccount" name="fromAccount" required aria-required="true">
+                <label for="fromAccount"
+                  >From Account <span class="required" aria-hidden="true">*</span></label
+                >
+                <select
+                  id="fromAccount"
+                  formControlName="fromAccount"
+                  name="fromAccount"
+                  required
+                  aria-required="true"
+                >
                   <option value="" disabled selected>Select source account</option>
-                  <option value="acc1">Checking — **** 4582</option>
-                  <option value="acc2">Savings — **** 9123</option>
-                  <option value="acc3">Investment — **** 7731</option>
+                  <option *ngFor="let account of accounts" [value]="account.id">
+                    {{ account.type }} {{ account.accountNumber }} ?
+                    {{ account.balance | currency }}
+                  </option>
                 </select>
               </div>
 
               <div class="form-group">
-                <label for="toAccount">To Beneficiary <span class="required" aria-hidden="true">*</span></label>
-                <select id="toAccount" [(ngModel)]="toAccount" name="toAccount" required aria-required="true">
+                <label for="toAccount"
+                  >To Beneficiary <span class="required" aria-hidden="true">*</span></label
+                >
+                <select
+                  id="toAccount"
+                  formControlName="toAccount"
+                  name="toAccount"
+                  required
+                  aria-required="true"
+                >
                   <option value="" disabled selected>Select recipient</option>
                   <option *ngFor="let b of beneficiaries" [value]="b.id">
                     {{ b.name }} — {{ b.bank }}
@@ -56,13 +71,15 @@
             </div>
 
             <div class="form-group">
-              <label for="amount">Amount (USD) <span class="required" aria-hidden="true">*</span></label>
+              <label for="amount"
+                >Amount (USD) <span class="required" aria-hidden="true">*</span></label
+              >
               <div class="amount-input-wrapper">
                 <span class="currency-symbol" aria-hidden="true">$</span>
                 <input
                   type="number"
                   id="amount"
-                  [(ngModel)]="amount"
+                  formControlName="amount"
                   name="amount"
                   placeholder="0.00"
                   step="0.01"
@@ -70,35 +87,41 @@
                   max="50000"
                   required
                   aria-required="true"
-                  aria-describedby="amount-hint" />
+                  aria-describedby="amount-hint"
+                />
               </div>
-              <p class="field-hint" id="amount-hint">Maximum transfer limit: $50,000 per transaction</p>
+              <p class="field-hint" id="amount-hint">
+                Maximum transfer limit: $50,000 per transaction
+              </p>
             </div>
 
             <div class="form-group">
-              <label for="description">Reference / Note <span class="optional">(optional)</span></label>
+              <label for="description"
+                >Reference / Note <span class="optional">(optional)</span></label
+              >
               <input
                 type="text"
                 id="description"
-                [(ngModel)]="description"
+                formControlName="description"
                 name="description"
                 placeholder="e.g. Rent, Loan repayment…"
-                maxlength="100" />
+                maxlength="100"
+              />
             </div>
 
             <div *ngIf="error" class="error-message" role="alert" aria-live="polite">
               <span aria-hidden="true">⚠</span> {{ error }}
             </div>
 
-            <button type="submit" class="transfer-btn">
-              Review Transfer →
-            </button>
-
+            <button type="submit" class="transfer-btn">Review Transfer →</button>
           </form>
 
           <!-- Step 2 · Confirm -->
-          <div *ngIf="confirming && !success" class="confirm-panel" aria-label="Transfer confirmation">
-
+          <div
+            *ngIf="confirming && !success"
+            class="confirm-panel"
+            aria-label="Transfer confirmation"
+          >
             <div class="form-steps">
               <span class="step">1 · Enter Details</span>
               <span class="step-arrow" aria-hidden="true">›</span>
@@ -113,11 +136,15 @@
             <div class="confirm-details">
               <div class="confirm-row">
                 <span class="confirm-label">From</span>
-                <span class="confirm-value">{{ fromAccount === 'acc1' ? 'Checking — **** 4582' : fromAccount === 'acc2' ? 'Savings — **** 9123' : 'Investment — **** 7731' }}</span>
+                <span class="confirm-value"
+                  >{{ selectedAccount?.type }} {{ selectedAccount?.accountNumber }}</span
+                >
               </div>
               <div class="confirm-row">
                 <span class="confirm-label">To</span>
-                <span class="confirm-value">{{ selectedBeneficiary?.name }} — {{ selectedBeneficiary?.bank }}</span>
+                <span class="confirm-value"
+                  >{{ selectedBeneficiary?.name }} — {{ selectedBeneficiary?.bank }}</span
+                >
               </div>
               <div class="confirm-row">
                 <span class="confirm-label">Account No.</span>
@@ -133,22 +160,31 @@
               </div>
             </div>
 
+            <p *ngIf="error" class="error-message" role="alert">{{ error }}</p>
             <div class="confirm-actions">
-              <button class="cancel-btn" (click)="cancelReview()" [disabled]="loading" aria-label="Go back and edit">
+              <button
+                class="cancel-btn"
+                (click)="cancelReview()"
+                [disabled]="loading"
+                aria-label="Go back and edit"
+              >
                 ← Edit
               </button>
-              <button class="transfer-btn" (click)="transfer()" [disabled]="loading" aria-label="Confirm and send transfer">
+              <button
+                class="transfer-btn"
+                (click)="transfer()"
+                [disabled]="loading"
+                aria-label="Confirm and send transfer"
+              >
                 <span class="spinner" *ngIf="loading" aria-hidden="true"></span>
                 <span *ngIf="!loading">✓ Confirm & Send</span>
                 <span *ngIf="loading">Processing…</span>
               </button>
             </div>
-
           </div>
 
           <!-- Step 3 · Success -->
           <div *ngIf="success" class="success-panel" role="status" aria-live="polite">
-
             <div class="form-steps">
               <span class="step">1 · Enter Details</span>
               <span class="step-arrow" aria-hidden="true">›</span>
@@ -158,13 +194,14 @@
             </div>
 
             <div class="success-icon" aria-hidden="true">✓</div>
+            <p>Reference: {{ reference }}</p>
             <h3 class="success-title">Transfer Successful!</h3>
-            <p class="success-sub">Your transfer of {{ amount | currency }} has been processed successfully.</p>
+            <p class="success-sub">
+              Your transfer of {{ amount | currency }} has been processed successfully.
+            </p>
             <button class="transfer-btn" (click)="resetForm()">Make Another Transfer</button>
           </div>
-
         </div>
-
       </main>
     </div>
   </div>

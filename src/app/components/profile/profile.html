@@ -1,0 +1,128 @@
+<app-navbar [showMenuToggle]="true" (menuToggle)="sidebarOpen = !sidebarOpen"></app-navbar>
+<div class="profile-layout">
+  <app-sidebar [isOpen]="sidebarOpen"></app-sidebar>
+  <main>
+    <header>
+      <h1>My profile</h1>
+      <p>Manage your personal details and profile photo.</p>
+    </header>
+    <form [formGroup]="form" (ngSubmit)="save()" *ngIf="user() as account">
+      <fieldset [disabled]="saving()">
+        <section class="photo-section" aria-label="Profile photo">
+          <img
+            [src]="avatar() || '/profile-placeholder.svg'"
+            alt="Profile photo preview"
+            width="112"
+            height="112"
+          />
+          <div>
+            <h2>{{ account.name }}</h2>
+            <p>{{ account.email }}</p>
+            <label for="photo">Upload photo</label>
+            <input
+              id="photo"
+              type="file"
+              accept="image/png,image/jpeg"
+              (change)="uploadPhoto($event)"
+              aria-describedby="photo-hint"
+            />
+            <p id="photo-hint">PNG or JPEG, up to 1 MB. Select Save changes to keep your photo.</p>
+            <button type="button" *ngIf="avatar()" (click)="removePhoto()">Remove photo</button>
+            <p *ngIf="readingPhoto()" role="status">Preparing photo...</p>
+          </div>
+        </section>
+        <section class="details">
+          <h2>Personal details</h2>
+          <div class="fields">
+            <div>
+              <label for="profile-name">Full name</label
+              ><input
+                id="profile-name"
+                formControlName="name"
+                autocomplete="name"
+                maxlength="80"
+                required
+              />
+            </div>
+            <div>
+              <label for="profile-email">Email address</label
+              ><input
+                id="profile-email"
+                type="email"
+                formControlName="email"
+                autocomplete="email"
+                maxlength="254"
+                required
+              />
+            </div>
+            <div>
+              <label for="profile-phone">Phone number <span>(optional)</span></label
+              ><input
+                id="profile-phone"
+                type="tel"
+                formControlName="phone"
+                autocomplete="tel"
+                maxlength="30"
+              />
+            </div>
+            <div>
+              <label for="profile-address">Address <span>(optional)</span></label
+              ><textarea
+                id="profile-address"
+                formControlName="address"
+                autocomplete="street-address"
+                maxlength="300"
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+          <div *ngIf="emailChanged" class="email-confirmation">
+            <label for="current-password">Current password</label>
+            <div class="password-field">
+              <input
+                id="current-password"
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="currentPassword"
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                (click)="showPassword = !showPassword"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+                [attr.aria-pressed]="showPassword"
+                aria-controls="current-password"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  aria-hidden="true"
+                >
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                  <path *ngIf="showPassword" d="m3 3 18 18" />
+                </svg>
+              </button>
+            </div>
+            <p>
+              Your new email will be used to sign in. Email ownership verification is simulated in
+              this demo.
+            </p>
+          </div>
+          <p class="account-id">Customer ID: {{ account.id }}</p>
+        </section>
+        <p *ngIf="error()" class="error" role="alert">{{ error() }}</p>
+        <p *ngIf="message()" class="success" role="status">{{ message() }}</p>
+        <div class="actions">
+          <button class="primary" type="submit" [disabled]="saving() || readingPhoto()">
+            {{ saving() ? 'Saving...' : 'Save changes' }}</button
+          ><button type="button" (click)="restore()">Cancel changes</button>
+        </div>
+      </fieldset>
+    </form>
+  </main>
+</div>
+<app-footer></app-footer>

@@ -1,86 +1,144 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BankService } from '../../services/bank.service';
-import { Beneficiary } from '../../models/bank.models';
+import { apiError } from '../../services/api';
+import { Account, Beneficiary } from '../../models/bank.models';
 import { NavbarComponent } from '../navbar/navbar';
 import { SidebarComponent } from '../sidebar/sidebar';
 import { FooterComponent } from '../footer/footer';
-
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-fund-transfer',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent, SidebarComponent, FooterComponent],
+  imports: [CommonModule, ReactiveFormsModule, NavbarComponent, SidebarComponent, FooterComponent],
   templateUrl: './fund-transfer.html',
   styleUrl: './fund-transfer.scss',
 })
 export class FundTransferComponent implements OnInit {
-  fromAccount: string = '';
-  toAccount: string = '';
-  amount: number = 0;
-  description: string = '';
-  loading: boolean = false;
-  success: boolean = false;
-  error: string = '';
-  sidebarOpen: boolean = true;
-  confirming: boolean = false;
+  private cdr = inject(ChangeDetectorRef);
+  private bankService = inject(BankService);
+  private destroyRef = inject(DestroyRef);
+  form = inject(FormBuilder).nonNullable.group({
+    fromAccount: ['', Validators.required],
+    toAccount: ['', Validators.required],
+    amount: [0, [Validators.required, Validators.min(0.01), Validators.max(50000)]],
+    description: ['', Validators.maxLength(100)],
+  });
+  accounts: Account[] = [];
   beneficiaries: Beneficiary[] = [];
-
-  constructor(private bankService: BankService) {}
-
+  loading = false;
+  success = false;
+  error = '';
+  sidebarOpen = true;
+  confirming = false;
+  reference = '';
+  private key = '';
+  get fromAccount() {
+    return this.form.controls.fromAccount.value;
+  }
+  get toAccount() {
+    return this.form.controls.toAccount.value;
+  }
+  get amount() {
+    return this.form.controls.amount.value;
+  }
+  get description() {
+    return this.form.controls.description.value;
+  }
+  get selectedAccount() {
+    return this.accounts.find((a) => a.id === this.fromAccount);
+  }
+  get selectedBeneficiary() {
+    return this.beneficiaries.find((b) => b.id === this.toAccount);
+  }
   ngOnInit() {
-    this.bankService.getBeneficiaries().subscribe(b => {
-      this.beneficiaries = b;
-    });
+    this.loadAccounts();
+    this.bankService
+      .getBeneficiaries()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (b) => {
+          this.cdr.markForCheck();
+          this.beneficiaries = b;
+        },
+        error: (e) => {
+          this.cdr.markForCheck();
+          this.error = apiError(e);
+        },
+      });
   }
-
-  get selectedBeneficiary(): Beneficiary | undefined {
-    return this.beneficiaries.find(b => b.id === this.toAccount);
+  loadAccounts() {
+    this.bankService
+      .getAccounts()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (a) => {
+          this.cdr.markForCheck();
+          this.accounts = a;
+        },
+        error: (e) => {
+          this.cdr.markForCheck();
+          this.error = apiError(e);
+        },
+      });
   }
-
   review() {
     this.error = '';
-    if (!this.fromAccount || !this.toAccount || !this.amount || this.amount <= 0) {
-      this.error = 'Please fill in all required fields.';
+    if (
+      this.form.invalid ||
+      !Number.isFinite(this.amount) ||
+      Math.abs(this.amount * 100 - Math.round(this.amount * 100)) > 0.000001
+    ) {
+      this.error = 'Choose accounts and enter $0.01 to $50,000 with at most two decimal places.';
       return;
     }
-    if (this.amount > 50000) {
-      this.error = 'Transfer limit is $50,000 per transaction.';
+    if (!this.selectedAccount || !this.selectedBeneficiary) {
+      this.error = 'Choose a valid source and recipient.';
       return;
     }
+    if (this.amount > this.selectedAccount.balance) {
+      this.error = 'Insufficient available balance.';
+      return;
+    }
+    this.key = crypto.randomUUID();
     this.confirming = true;
   }
-
   cancelReview() {
-    this.confirming = false;
+    if (!this.loading) this.confirming = false;
   }
-
   transfer() {
+    if (this.loading || !this.confirming) return;
     this.loading = true;
-    this.bankService.transferFunds(this.fromAccount, this.toAccount, this.amount).subscribe(
-      (result) => {
-        this.loading = false;
-        this.confirming = false;
-        if (result) {
+    this.error = '';
+    this.bankService
+      .transferFunds(this.fromAccount, this.toAccount, this.amount, this.description, this.key)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (r) => {
+          this.cdr.markForCheck();
+          this.reference = r.reference;
+          this.loading = false;
+          this.confirming = false;
           this.success = true;
-          setTimeout(() => this.resetForm(), 4000);
-        } else {
-          this.error = 'Transfer failed. Please try again.';
-        }
-      }
-    );
+          this.loadAccounts();
+        },
+        error: (e) => {
+          this.cdr.markForCheck();
+          this.loading = false;
+          this.error = apiError(e);
+        },
+      });
   }
-
   resetForm() {
-    this.fromAccount = '';
-    this.toAccount = '';
-    this.amount = 0;
-    this.description = '';
+    this.form.reset();
     this.success = false;
     this.confirming = false;
     this.error = '';
+    this.reference = '';
   }
-
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
   }

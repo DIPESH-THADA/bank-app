@@ -1,5 +1,4 @@
 <div class="page-container">
-
   <app-navbar [showMenuToggle]="true" (menuToggle)="toggleSidebar()"></app-navbar>
 
   <div class="page-wrapper">
@@ -7,20 +6,23 @@
 
     <div class="content-area">
       <main class="main-content" role="main">
-
+        <p *ngIf="error" class="error-message" role="alert">
+          {{ error }} <button (click)="ngOnInit()">Retry</button>
+        </p>
         <div class="page-header">
           <div>
             <h2>Transaction History</h2>
             <p>Search, filter, and review all your transactions</p>
           </div>
           <div class="tx-summary" *ngIf="!loading">
-            <span class="tx-count">{{ filteredTransactions.length }} of {{ transactions.length }}</span>
+            <span class="tx-count"
+              >{{ filteredTransactions.length }} of {{ transactions.length }}</span
+            >
           </div>
         </div>
 
         <!-- Search & Filters -->
         <div class="filters-panel" role="search" aria-label="Filter transactions">
-
           <div class="search-bar">
             <span class="search-icon" aria-hidden="true">🔍</span>
             <input
@@ -29,7 +31,8 @@
               (ngModelChange)="applyFilters()"
               placeholder="Search by description or category…"
               aria-label="Search transactions"
-              class="search-input" />
+              class="search-input"
+            />
           </div>
 
           <div class="filter-row">
@@ -38,31 +41,71 @@
                 class="filter-btn"
                 [class.active]="selectedFilter === 'all'"
                 (click)="onFilterChange('all')"
-                aria-pressed="{{ selectedFilter === 'all' }}">
+                aria-pressed="{{ selectedFilter === 'all' }}"
+              >
                 All
               </button>
               <button
                 class="filter-btn"
                 [class.active]="selectedFilter === 'credit'"
                 (click)="onFilterChange('credit')"
-                aria-pressed="{{ selectedFilter === 'credit' }}">
+                aria-pressed="{{ selectedFilter === 'credit' }}"
+              >
                 ↑ Income
               </button>
               <button
                 class="filter-btn"
                 [class.active]="selectedFilter === 'debit'"
                 (click)="onFilterChange('debit')"
-                aria-pressed="{{ selectedFilter === 'debit' }}">
+                aria-pressed="{{ selectedFilter === 'debit' }}"
+              >
                 ↓ Expenses
               </button>
             </div>
 
             <div class="advanced-filters">
               <select
+                aria-label="Filter by status"
+                [(ngModel)]="selectedStatus"
+                (ngModelChange)="applyFilters()"
+                class="filter-select"
+              >
+                <option value="all">All statuses</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+              </select>
+              <input
+                type="number"
+                min="0"
+                aria-label="Minimum amount"
+                placeholder="Minimum USD"
+                [(ngModel)]="minAmount"
+                (ngModelChange)="applyFilters()"
+                class="date-input"
+              />
+              <input
+                type="number"
+                min="0"
+                aria-label="Maximum amount"
+                placeholder="Maximum USD"
+                [(ngModel)]="maxAmount"
+                (ngModelChange)="applyFilters()"
+                class="date-input"
+              />
+              <button
+                class="filter-btn"
+                (click)="exportCsv()"
+                [disabled]="loading || !filteredTransactions.length"
+              >
+                Export CSV
+              </button>
+              <select
                 [(ngModel)]="selectedCategory"
                 (ngModelChange)="applyFilters()"
                 aria-label="Filter by category"
-                class="filter-select">
+                class="filter-select"
+              >
                 <option *ngFor="let cat of categories" [value]="cat">
                   {{ cat === 'all' ? 'All Categories' : cat }}
                 </option>
@@ -75,7 +118,8 @@
                   (ngModelChange)="applyFilters()"
                   aria-label="From date"
                   class="date-input"
-                  placeholder="From" />
+                  placeholder="From"
+                />
                 <span class="date-separator" aria-hidden="true">–</span>
                 <input
                   type="date"
@@ -83,24 +127,30 @@
                   (ngModelChange)="applyFilters()"
                   aria-label="To date"
                   class="date-input"
-                  placeholder="To" />
+                  placeholder="To"
+                />
               </div>
 
               <button
                 class="clear-btn"
                 *ngIf="hasActiveFilters"
                 (click)="clearFilters()"
-                aria-label="Clear all filters">
+                aria-label="Clear all filters"
+              >
                 ✕ Clear
               </button>
             </div>
           </div>
-
         </div>
 
         <!-- Loading Skeleton -->
-        <div class="skeleton-list" *ngIf="loading" aria-label="Loading transactions" aria-busy="true">
-          <div class="skeleton-item" *ngFor="let i of [1,2,3,4,5]">
+        <div
+          class="skeleton-list"
+          *ngIf="loading"
+          aria-label="Loading transactions"
+          aria-busy="true"
+        >
+          <div class="skeleton-item" *ngFor="let i of [1, 2, 3, 4, 5]">
             <div class="sk sk-icon"></div>
             <div class="sk-body">
               <div class="sk sk-line w-60"></div>
@@ -115,16 +165,18 @@
 
         <!-- Transactions List -->
         <div class="transactions-list" *ngIf="!loading" role="list" aria-label="Transactions">
-
           <div
             class="transaction-item"
-            *ngFor="let transaction of filteredTransactions"
-            role="listitem">
+            *ngFor="let transaction of pageTransactions"
+            role="listitem"
+          >
             <div class="transaction-icon" [ngClass]="transaction.type" aria-hidden="true">
               {{ getCategoryIcon(transaction.category) }}
             </div>
             <div class="transaction-details">
-              <p class="transaction-description">{{ transaction.description }}</p>
+              <button class="filter-btn" (click)="selectedTransaction = transaction">
+                {{ transaction.description }}
+              </button>
               <p class="transaction-meta">
                 <span class="transaction-category">{{ transaction.category }}</span>
                 <span class="meta-dot" aria-hidden="true">·</span>
@@ -135,13 +187,17 @@
               <div
                 class="transaction-amount"
                 [ngClass]="transaction.type"
-                aria-label="{{ transaction.type === 'credit' ? 'Credit' : 'Debit' }} {{ transaction.amount | currency }}">
+                aria-label="{{ transaction.type === 'credit' ? 'Credit' : 'Debit' }} {{
+                  transaction.amount | currency
+                }}"
+              >
                 {{ transaction.type === 'credit' ? '+' : '−' }}{{ transaction.amount | currency }}
               </div>
               <div
                 class="transaction-status"
                 [ngClass]="getStatusClass(transaction.status)"
-                [attr.aria-label]="'Status: ' + transaction.status">
+                [attr.aria-label]="'Status: ' + transaction.status"
+              >
                 {{ transaction.status }}
               </div>
             </div>
@@ -152,11 +208,37 @@
             <span class="empty-icon" aria-hidden="true">📭</span>
             <p class="empty-title">No transactions found</p>
             <p class="empty-sub" *ngIf="hasActiveFilters">Try adjusting your search or filters</p>
-            <button class="clear-btn primary" *ngIf="hasActiveFilters" (click)="clearFilters()">Clear Filters</button>
+            <button class="clear-btn primary" *ngIf="hasActiveFilters" (click)="clearFilters()">
+              Clear Filters
+            </button>
           </div>
-
         </div>
 
+        <nav aria-label="Transaction pages">
+          <button class="filter-btn" (click)="page = page - 1" [disabled]="page <= 1">
+            Previous
+          </button>
+          Page {{ page }} of {{ pageCount }}
+          <button class="filter-btn" (click)="page = page + 1" [disabled]="page >= pageCount">
+            Next
+          </button>
+        </nav>
+        <section
+          *ngIf="selectedTransaction as tx"
+          class="receipt-panel"
+          role="region"
+          aria-label="Transaction receipt"
+          tabindex="-1"
+        >
+          <h3>Transaction receipt</h3>
+          <p>Rastriya Banijya Bank simulated demo ? USD</p>
+          <p>{{ tx.description }}</p>
+          <p>{{ tx.date | date: 'medium' }}</p>
+          <p>{{ tx.amount | currency }} ? {{ tx.type }} ? {{ tx.status }}</p>
+          <p>Reference: {{ tx.reference || tx.id }}</p>
+          <button class="filter-btn" (click)="printReceipt()">Print / Save PDF</button
+          ><button class="filter-btn" (click)="selectedTransaction = null">Close receipt</button>
+        </section>
       </main>
     </div>
   </div>

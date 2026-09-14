@@ -1,6 +1,6 @@
+<p *ngIf="logoutError" role="alert">{{ logoutError }}</p>
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-content">
-
     <!-- Left: menu toggle + brand -->
     <div class="navbar-left">
       <button
@@ -8,7 +8,8 @@
         *ngIf="showMenuToggle"
         (click)="onMenuToggle()"
         aria-label="Toggle sidebar menu"
-        aria-expanded="false">
+        aria-expanded="false"
+      >
         <span class="hamburger-icon">
           <span></span>
           <span></span>
@@ -16,7 +17,7 @@
         </span>
       </button>
       <a routerLink="/dashboard" class="navbar-brand" aria-label="Rastriya Banijya Bank home">
-        <img src="/Image/logo.png" alt="RBB Logo" class="brand-logo-img">
+        <img src="/rbb-logo.svg" alt="Rastriya Banijya Bank Logo" class="brand-logo-img" />
         <span class="brand-name">Rastriya Banijya Bank</span>
       </a>
     </div>
@@ -43,13 +44,15 @@
 
     <!-- Right: theme toggle + notifications + user -->
     <div class="navbar-actions">
-
       <!-- Theme Toggle -->
       <button
         class="theme-toggle"
         (click)="themeService.toggleTheme()"
-        [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
-        [title]="themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+        [attr.aria-label]="
+          themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'
+        "
+        [title]="themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+      >
         <span *ngIf="themeService.isDarkMode()" aria-hidden="true">☀️</span>
         <span *ngIf="!themeService.isDarkMode()" aria-hidden="true">🌙</span>
       </button>
@@ -60,12 +63,14 @@
           class="notif-btn"
           (click)="toggleNotifications()"
           [attr.aria-label]="'Notifications — ' + notificationService.unreadCount() + ' unread'"
-          [attr.aria-expanded]="showNotifications">
+          [attr.aria-expanded]="showNotifications"
+        >
           <span class="bell-icon" aria-hidden="true">🔔</span>
           <span
             class="notif-badge"
             *ngIf="notificationService.unreadCount() > 0"
-            aria-hidden="true">
+            aria-hidden="true"
+          >
             {{ notificationService.unreadCount() }}
           </span>
         </button>
@@ -76,14 +81,16 @@
           *ngIf="showNotifications"
           role="dialog"
           aria-label="Notifications"
-          aria-modal="false">
+          aria-modal="false"
+        >
           <div class="notif-header">
             <h4>Notifications</h4>
             <button
               class="mark-all-btn"
               (click)="markAllRead()"
               *ngIf="notificationService.unreadCount() > 0"
-              aria-label="Mark all notifications as read">
+              aria-label="Mark all notifications as read"
+            >
               Mark all read
             </button>
           </div>
@@ -93,12 +100,9 @@
               *ngFor="let notif of notificationService.notifications()"
               [class.unread]="!notif.read"
               role="listitem"
-              (click)="notificationService.markRead(notif.id)">
-              <span
-                class="notif-dot"
-                [ngClass]="'dot-' + notif.type"
-                aria-hidden="true">
-              </span>
+              (click)="notificationService.markRead(notif.id)"
+            >
+              <span class="notif-dot" [ngClass]="'dot-' + notif.type" aria-hidden="true"> </span>
               <div class="notif-content">
                 <p class="notif-msg">{{ notif.message }}</p>
                 <p class="notif-time">{{ notif.date | date: 'MMM d, h:mm a' }}</p>
@@ -112,7 +116,12 @@
         </div>
 
         <!-- Overlay to close dropdown -->
-        <div class="overlay" *ngIf="showNotifications" (click)="closeDropdowns()" aria-hidden="true"></div>
+        <div
+          class="overlay"
+          *ngIf="showNotifications"
+          (click)="closeDropdowns()"
+          aria-hidden="true"
+        ></div>
       </div>
 
       <!-- User Menu -->
@@ -121,22 +130,36 @@
           class="user-btn"
           (click)="toggleUserMenu()"
           [attr.aria-label]="currentUser.name + ' account menu'"
-          [attr.aria-expanded]="showUserMenu">
-          <img [src]="currentUser.avatar" [alt]="currentUser.name" class="avatar" width="36" height="36">
+          [attr.aria-expanded]="showUserMenu"
+        >
+          <img
+            [src]="currentUser.avatar || '/profile-placeholder.svg'"
+            [alt]="currentUser.name"
+            class="avatar"
+            width="36"
+            height="36"
+          />
         </button>
 
         <div class="user-dropdown" *ngIf="showUserMenu" role="menu" aria-label="User menu">
           <p class="user-name">{{ currentUser.name }}</p>
           <p class="user-email">{{ currentUser.email }}</p>
-          <hr class="dropdown-divider" aria-hidden="true">
+          <hr class="dropdown-divider" aria-hidden="true" />
+          <a class="profile-link" routerLink="/profile" (click)="closeDropdowns()" role="menuitem"
+            >My profile</a
+          >
           <button class="logout-btn" (click)="logout()" role="menuitem" aria-label="Sign out">
             Sign Out
           </button>
         </div>
 
-        <div class="overlay" *ngIf="showUserMenu" (click)="closeDropdowns()" aria-hidden="true"></div>
+        <div
+          class="overlay"
+          *ngIf="showUserMenu"
+          (click)="closeDropdowns()"
+          aria-hidden="true"
+        ></div>
       </div>
-
     </div>
   </div>
 </nav>

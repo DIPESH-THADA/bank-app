@@ -1,4 +1,15 @@
-import { Component, Input, Output, EventEmitter, OnInit, HostListener, inject } from '@angular/core';
+import { ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import {
+  DestroyRef,
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  HostListener,
+  inject,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
@@ -7,6 +18,7 @@ import { NotificationService } from '../../services/notification.service';
 import { User } from '../../models/bank.models';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule],
@@ -14,23 +26,28 @@ import { User } from '../../models/bank.models';
   styleUrl: './navbar.scss',
 })
 export class NavbarComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   @Input() showMenuToggle = false;
   @Output() menuToggle = new EventEmitter<void>();
 
   currentUser: User | null = null;
   showNotifications = false;
   showUserMenu = false;
+  logoutError = '';
 
   notificationService = inject(NotificationService);
 
   constructor(
     public themeService: ThemeService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
   ) {}
 
+  private destroyRef = inject(DestroyRef);
+
   ngOnInit() {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
+      this.cdr.markForCheck();
       this.currentUser = user;
     });
   }
@@ -64,7 +81,12 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: () => this.router.navigate(['/login']),
+      error: () => {
+        this.cdr.markForCheck();
+        this.logoutError = 'Logout failed. Please try again.';
+      },
+    });
   }
 }

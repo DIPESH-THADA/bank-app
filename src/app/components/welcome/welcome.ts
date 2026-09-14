@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './welcome.html',
-  styleUrl: './welcome.scss'
+  styleUrl: './welcome.scss',
 })
 export class WelcomeComponent {
   currentYear = new Date().getFullYear();

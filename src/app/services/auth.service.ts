@@ -1,33 +1,49 @@
-import { Injectable } from '@angular/core';
-import { User } from '../models/bank.models';
-import { Observable, of, BehaviorSubject } from 'rxjs';
-
-@Injectable({
-  providedIn: 'root'
-})
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, catchError, map, of, tap } from 'rxjs';
+import { User, ProfileUpdate } from '../models/bank.models';
+@Injectable({ providedIn: 'root' })
 export class AuthService {
+  private http = inject(HttpClient);
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
-
-  login(email: string, password: string): Observable<boolean> {
-    if (email && password) {
-      const mockUser: User = {
-        id: '1',
-        name: 'John Doe',
-        email: email,
-        avatar: 'https://ui-avatars.com/api/?name=John+Doe'
-      };
-      this.currentUserSubject.next(mockUser);
-      return of(true);
-    }
-    return of(false);
+  currentUser$ = this.currentUserSubject.asObservable();
+  login(email: string, password: string) {
+    return this.http.post<User>('/api/auth/login', { email, password }).pipe(
+      tap((user) => this.currentUserSubject.next(user)),
+      map(() => true),
+    );
   }
-
-  logout(): void {
-    this.currentUserSubject.next(null);
+  register(name: string, email: string, password: string) {
+    return this.http.post<{ verificationToken: string; message: string }>('/api/auth/register', {
+      name,
+      email,
+      password,
+    });
   }
-
-  isLoggedIn(): boolean {
+  verify(token: string) {
+    return this.http.post('/api/auth/verify', { token });
+  }
+  restoreSession() {
+    return this.http.get<User>('/api/auth/me').pipe(
+      tap((user) => this.currentUserSubject.next(user)),
+      map(() => true),
+      catchError(() => {
+        this.currentUserSubject.next(null);
+        return of(false);
+      }),
+    );
+  }
+  logout() {
+    return this.http
+      .post('/api/auth/logout', {})
+      .pipe(tap(() => this.currentUserSubject.next(null)));
+  }
+  isLoggedIn() {
     return !!this.currentUserSubject.value;
+  }
+  updateProfile(profile: ProfileUpdate) {
+    return this.http
+      .patch<User>('/api/profile', profile)
+      .pipe(tap((user) => this.currentUserSubject.next(user)));
   }
 }

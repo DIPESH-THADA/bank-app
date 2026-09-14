@@ -1,14 +1,14 @@
 <div class="dashboard-container">
-
   <app-navbar [showMenuToggle]="true" (menuToggle)="toggleSidebar()"></app-navbar>
 
   <div class="dashboard-wrapper">
-
     <app-sidebar [isOpen]="sidebarOpen"></app-sidebar>
 
     <div class="content-area">
       <main class="main-content" role="main">
-
+        <p *ngIf="error" class="error-message" role="alert">
+          {{ error }} <button (click)="ngOnInit()">Retry</button>
+        </p>
         <div class="page-header">
           <div>
             <h2>{{ getGreeting() }}, {{ currentUser?.name ?? 'Welcome' }}!</h2>
@@ -20,7 +20,16 @@
         <div class="balance-card" aria-label="Total balance">
           <div class="balance-info">
             <p class="balance-label">Total Balance</p>
-            <h3 class="balance-amount" *ngIf="!loadingAccounts">{{ totalBalance | currency }}</h3>
+            <button
+              class="account-action"
+              (click)="balanceVisible = !balanceVisible"
+              [attr.aria-pressed]="!balanceVisible"
+            >
+              {{ balanceVisible ? 'Hide balances' : 'Show balances' }}
+            </button>
+            <h3 class="balance-amount" *ngIf="!loadingAccounts">
+              {{ balanceVisible ? (totalBalance | currency) : '******' }}
+            </h3>
             <div class="balance-skeleton" *ngIf="loadingAccounts" aria-busy="true">
               <div class="sk sk-balance"></div>
             </div>
@@ -29,6 +38,21 @@
           <div class="balance-icon" aria-hidden="true">💰</div>
         </div>
 
+        <section class="section" aria-label="Income and spending">
+          <h3>Income and spending</h3>
+          <p>
+            All recorded activity, excluding account transfers. Opening demo balances count as
+            income.
+          </p>
+          <p>Income {{ income | currency }}</p>
+          <meter [value]="income" [max]="income + spending || 1" aria-label="Income share"></meter>
+          <p>Spending {{ spending | currency }}</p>
+          <meter
+            [value]="spending"
+            [max]="income + spending || 1"
+            aria-label="Spending share"
+          ></meter>
+        </section>
         <!-- Accounts Grid -->
         <div class="section">
           <div class="section-header">
@@ -38,7 +62,7 @@
 
           <!-- Loading Skeleton -->
           <div class="accounts-grid" *ngIf="loadingAccounts" aria-busy="true">
-            <div class="account-card sk-account-card" *ngFor="let i of [1,2,3]">
+            <div class="account-card sk-account-card" *ngFor="let i of [1, 2, 3]">
               <div class="sk-block">
                 <div class="sk sk-line w-50"></div>
                 <div class="sk sk-line w-30"></div>
@@ -56,10 +80,15 @@
               </div>
               <div class="account-body">
                 <p class="account-label">Available Balance</p>
-                <p class="account-balance">{{ account.balance | currency }}</p>
+                <p class="account-balance">
+                  {{ balanceVisible ? (account.balance | currency) : '******' }}
+                </p>
               </div>
-              <button class="account-action" routerLink="/accounts"
-                [attr.aria-label]="'View details for ' + account.type + ' account'">
+              <button
+                class="account-action"
+                routerLink="/accounts"
+                [attr.aria-label]="'View details for ' + account.type + ' account'"
+              >
                 View Details
               </button>
             </div>
@@ -70,19 +99,39 @@
         <div class="section">
           <h3>Quick Actions</h3>
           <div class="actions-grid" role="list">
-            <button class="action-btn" routerLink="/transfer" role="listitem" aria-label="Transfer money">
+            <button
+              class="action-btn"
+              routerLink="/transfer"
+              role="listitem"
+              aria-label="Transfer money"
+            >
               <span class="action-icon" aria-hidden="true">💸</span>
               <span>Transfer Money</span>
             </button>
-            <button class="action-btn" routerLink="/transactions" role="listitem" aria-label="View transactions">
+            <button
+              class="action-btn"
+              routerLink="/transactions"
+              role="listitem"
+              aria-label="View transactions"
+            >
               <span class="action-icon" aria-hidden="true">📊</span>
               <span>Transactions</span>
             </button>
-            <button class="action-btn" routerLink="/accounts" role="listitem" aria-label="Manage cards">
+            <button
+              class="action-btn"
+              routerLink="/accounts"
+              role="listitem"
+              aria-label="Manage cards"
+            >
               <span class="action-icon" aria-hidden="true">💳</span>
               <span>Manage Cards</span>
             </button>
-            <button class="action-btn action-coming-soon" disabled role="listitem" aria-label="Bill payments — coming soon">
+            <button
+              class="action-btn action-coming-soon"
+              disabled
+              role="listitem"
+              aria-label="Bill payments — coming soon"
+            >
               <span class="action-icon" aria-hidden="true">📄</span>
               <span>Pay Bills</span>
               <span class="soon-badge">Soon</span>
@@ -94,12 +143,14 @@
         <div class="section">
           <div class="section-header">
             <h3>Recent Transactions</h3>
-            <a routerLink="/transactions" class="see-all" aria-label="View all transactions">View all →</a>
+            <a routerLink="/transactions" class="see-all" aria-label="View all transactions"
+              >View all →</a
+            >
           </div>
 
           <!-- Loading Skeleton -->
           <div class="recent-list" *ngIf="loadingTransactions" aria-busy="true">
-            <div class="recent-item sk-recent" *ngFor="let i of [1,2,3,4,5]">
+            <div class="recent-item sk-recent" *ngFor="let i of [1, 2, 3, 4, 5]">
               <div class="sk sk-icon-sm"></div>
               <div class="sk-body">
                 <div class="sk sk-line w-55"></div>
@@ -121,7 +172,10 @@
               <div
                 class="recent-amount"
                 [ngClass]="tx.type"
-                aria-label="{{ tx.type === 'credit' ? 'Credit' : 'Debit' }} {{ tx.amount | currency }}">
+                aria-label="{{ tx.type === 'credit' ? 'Credit' : 'Debit' }} {{
+                  tx.amount | currency
+                }}"
+              >
                 {{ tx.type === 'credit' ? '+' : '−' }}{{ tx.amount | currency }}
               </div>
             </div>
@@ -132,10 +186,8 @@
             </div>
           </div>
         </div>
-
       </main>
     </div>
-
   </div>
 
   <app-footer></app-footer>

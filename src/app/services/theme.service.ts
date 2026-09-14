@@ -7,7 +7,7 @@ export class ThemeService {
 
   constructor() {
     const saved = localStorage.getItem('nexus-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ?? false;
     const dark = saved === 'dark' || (!saved && prefersDark);
     this._isDarkMode.set(dark);
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');

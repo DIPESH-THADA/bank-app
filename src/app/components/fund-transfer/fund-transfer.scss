@@ -242,14 +242,17 @@
     background: var(--bg-hover);
   }
 
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 /* Spinner */
 .spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255,255,255,0.4);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -257,7 +260,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Confirm Panel */
@@ -294,7 +299,9 @@
   border-bottom: 1px solid var(--border-light);
   gap: 12px;
 
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 
   &.highlight {
     background: var(--nav-active-bg);
@@ -370,37 +377,90 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Responsive ── */
-@media (max-width: 1400px) { .main-content { padding: 28px; } }
-
-@media (max-width: 1024px) {
-  .main-content { padding: 22px; }
-  .transfer-card { padding: 26px; max-width: 100%; }
+@media (max-width: 1400px) {
+  .main-content {
+    padding: 28px;
+  }
 }
 
-@media (max-width: 900px) { .transfer-card { max-width: 100%; } }
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 22px;
+  }
+  .transfer-card {
+    padding: 26px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .transfer-card {
+    max-width: 100%;
+  }
+}
 
 @media (max-width: 480px) {
-  .page-header h2 { font-size: 20px; }
-  .transfer-card { padding: 20px 16px; border-radius: 12px; }
-  .transfer-btn { font-size: 14px; padding: 12px; }
-  .form-steps { flex-wrap: wrap; gap: 4px; }
-  .step { font-size: 11px; padding: 4px 8px; }
-  .confirm-row { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .confirm-value { text-align: left; }
+  .page-header h2 {
+    font-size: 20px;
+  }
+  .transfer-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+  .transfer-btn {
+    font-size: 14px;
+    padding: 12px;
+  }
+  .form-steps {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .step {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  .confirm-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .confirm-value {
+    text-align: left;
+  }
 }
 
 @media (max-width: 375px) {
-  .page-header h2 { font-size: 18px; }
-  .transfer-card { padding: 16px 14px; border-radius: 10px; }
+  .page-header h2 {
+    font-size: 18px;
+  }
+  .transfer-card {
+    padding: 16px 14px;
+    border-radius: 10px;
+  }
   .form-group {
     margin-bottom: 14px;
-    label { font-size: 12px; }
-    input, select { padding: 10px 12px; font-size: 13px; }
+    label {
+      font-size: 12px;
+    }
+    input,
+    select {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
   }
-  .transfer-btn { font-size: 13px; padding: 11px; }
+  .transfer-btn {
+    font-size: 13px;
+    padding: 11px;
+  }
 }

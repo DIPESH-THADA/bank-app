@@ -1,59 +1,78 @@
-# NexusBank
+# Rastriya Banijya Bank
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.14.
+An Angular banking portfolio demo with a persistent local API. All balances, cards and transfers are simulated in USD; no real money is involved.
 
-## Development server
+## Run locally
 
-To start a local development server, run:
+Use Node 24 LTS and npm. The existing environment was verified with Node 23.5.0; its SQLite module prints an experimental warning.
 
-```bash
-ng serve
+```sh
+npm install
+npm run server
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+In a second terminal in this directory:
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```sh
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Open http://localhost:4200. On PowerShell installations that block npm.ps1, use `npm.cmd` instead of `npm`.
 
-```bash
-ng generate --help
+Demo sign-in: **demo@nexusbank.test** / **NexusDemo!2026**.
+
+Alternatively register an account with a 12-128 character password containing uppercase, lowercase, a number and a symbol. Press **Verify demo email and sign in** after registration. No email is sent; this is explicitly simulated verification. Each new account receives demo opening funds.
+
+The Angular development server proxies `/api` to `http://127.0.0.1:3001`. The API persists data in `server/data/nexus.sqlite` (ignored by Git). Restarting the API preserves balances and users. Run both processes: a static frontend deployment alone cannot provide authentication or banking data.
+
+If port 4200 is occupied, stop your previous app server or configure another port and set `APP_ORIGIN` to the exact frontend origin before starting the API. `PORT` and `DB_PATH` also configure the API. The API binds to loopback. There is no production deployment configuration in this project.
+
+## Checks
+
+```sh
+npm test -- --watch=false
+npm run test:api
+npm run build
+npm run format:check
 ```
 
-## Building
+The API tests use isolated in-memory databases, not your demo account's database.
 
-To build the project run:
+## API overview
 
-```bash
-ng build
+All requests return JSON. Mutations require `X-Nexus-Request: 1`; Angular supplies it through an interceptor. Authentication uses an HttpOnly, SameSite=Strict cookie with a one-hour lifetime. Banking endpoints require a valid session and enforce ownership. `NODE_ENV=production` adds the Secure cookie flag; it does not make this local demo production-ready.
+
+| Method | Endpoint                  | Purpose                                                     |
+| ------ | ------------------------- | ----------------------------------------------------------- |
+| POST   | `/api/auth/register`      | Validate and register; return local demo verification token |
+| POST   | `/api/auth/verify`        | Consume a demo verification token                           |
+| POST   | `/api/auth/login`         | Authenticate and issue session cookie                       |
+| GET    | `/api/auth/me`            | Restore the session                                         |
+| POST   | `/api/auth/logout`        | Invalidate the session                                      |
+| GET    | `/api/accounts`           | Customer accounts and balances                              |
+| GET    | `/api/transactions`       | Customer ledger history                                     |
+| GET    | `/api/beneficiaries`      | Supported demo recipients                                   |
+| POST   | `/api/transfers`          | Confirm an atomic simulated transfer                        |
+| GET    | `/api/cards`              | Customer cards                                              |
+| PATCH  | `/api/cards/:id`          | Set `status` to `active` or `blocked`                       |
+| GET    | `/api/notifications`      | Customer notifications                                      |
+| POST   | `/api/notifications/read` | Mark one `id`, or all, as read                              |
+
+Transfer body:
+
+```json
+{
+  "from": "source-account-id",
+  "to": "b1",
+  "amount": 25.5,
+  "description": "Demo payment",
+  "key": "a-unique-uuid-for-this-transfer",
+  "confirmed": true
+}
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Successful transfers return `{ "reference": "..." }`. Retrying the identical request with the same key returns the original reference without another debit. Reusing the key with different details returns 409. Amounts are validated and stored as integer cents. The maximum is $50,000 per transfer; there is no daily-limit or fraud engine.
 
-## Running unit tests
+CSV exports cover the entire filtered transaction result, not only the visible page. Select a transaction to view its receipt and choose Print / Save PDF, then use the browser's PDF destination.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+See [AUDIT-IMPLEMENTATION.md](AUDIT-IMPLEMENTATION.md) for completed audit changes, implementation choices and remaining roadmap items.
