@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist/nexus-bank/browser"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Add the hosted API proxy above this SPA fallback before publishing
+# the full banking app. See DEPLOYMENT.md.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
