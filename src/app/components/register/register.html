@@ -10,9 +10,12 @@
 
   <div class="auth-card">
     <div class="auth-header">
-      <img src="/rbb-logo.svg" alt="Rastriya Banijya Bank Logo" class="auth-logo" />
-      <h1>Create Account</h1>
-      <p>Join Rastriya Banijya Bank today</p>
+      <img src="/rbb-logo.svg" alt="Student demo logo" class="auth-logo" />
+      <h1>Create a demo account</h1>
+      <p>
+        Independent student project. Use a fictitious name and a password used only for this demo.
+        No bank account will be opened.
+      </p>
     </div>
 
     <div *ngIf="success" class="success-message">
@@ -136,7 +139,7 @@
       <div *ngIf="error" class="error-message">⚠ {{ error }}</div>
 
       <button type="submit" class="submit-btn" [disabled]="loading">
-        {{ loading ? 'Creating Account…' : 'Create Account' }}
+        {{ loading ? 'Creating Account…' : 'Create demo account' }}
       </button>
     </form>
 

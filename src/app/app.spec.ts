@@ -18,6 +18,8 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.demo-banner')?.textContent).toContain('Simulated banking demo');
+    expect(compiled.querySelector('.demo-banner')?.textContent?.replace(/\s+/g, ' ')).toContain(
+      'not affiliated with or operated by the bank',
+    );
   });
 });

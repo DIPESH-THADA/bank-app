@@ -10,12 +10,18 @@
 
   <div class="auth-card">
     <div class="auth-header">
-      <img src="/rbb-logo.svg" alt="Rastriya Banijya Bank Logo" class="auth-logo" />
-      <h1>Rastriya Banijya Bank</h1>
-      <p>Secure Banking at Your Fingertips</p>
+      <img src="/rbb-logo.svg" alt="Student demo logo" class="auth-logo" />
+      <h1>Student demo sign-in</h1>
+      <p>Use a demo account only. This is not the bank's website.</p>
     </div>
 
-    <p>Demo login: demo@nexusbank.test / NexusDemo!2026</p>
+    <button type="button" class="submit-btn" (click)="tryDemo()" [disabled]="loading">
+      Try demo account
+    </button>
+    <p class="demo-form-note">
+      Or sign in with an account created for this student project. Never reuse your real banking
+      password.
+    </p>
     <form [formGroup]="form" (ngSubmit)="login()" class="auth-form">
       <div class="form-group">
         <label for="email">Email Address</label>

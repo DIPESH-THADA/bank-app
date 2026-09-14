@@ -31,6 +31,10 @@ export class LoginComponent {
   error = '';
   success = false;
   currentYear = new Date().getFullYear();
+  tryDemo() {
+    this.form.setValue({ email: 'demo@nexusbank.test', password: 'NexusDemo!2026' });
+    this.login();
+  }
   login() {
     if (this.loading) return;
     if (this.form.invalid) {
