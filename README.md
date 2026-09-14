@@ -1,8 +1,17 @@
 # Rastriya Banijya Bank
 
+Part of **Dipesh Thada’s development portfolio**: a responsive Angular banking demo with a persistent local API.
+
 An Angular banking portfolio demo with a persistent local API. All balances, cards and transfers are simulated in USD; no real money is involved.
 
 ## Run locally
+
+Clone the repository first:
+
+```sh
+git clone https://github.com/DIPESH-THADA/bank-app.git
+cd bank-app
+```
 
 Use Node 24 LTS and npm. The existing environment was verified with Node 23.5.0; its SQLite module prints an experimental warning.
 
@@ -76,3 +85,20 @@ Successful transfers return `{ "reference": "..." }`. Retrying the identical req
 CSV exports cover the entire filtered transaction result, not only the visible page. Select a transaction to view its receipt and choose Print / Save PDF, then use the browser's PDF destination.
 
 See [AUDIT-IMPLEMENTATION.md](AUDIT-IMPLEMENTATION.md) for completed audit changes, implementation choices and remaining roadmap items.
+
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/` | Angular application, components, services and tests. |
+| `public/` | Static images and branding assets. |
+| `server/` | Local API, SQLite persistence and API tests. |
+| `package.json` | Dependencies and development scripts. |
+
+## Contributing
+
+Suggestions and improvements are welcome through issues or pull requests. Keep changes focused, test affected functionality, and avoid committing secrets, local databases or generated dependencies.
+
+## License
+
+No license file is currently included in this repository.
